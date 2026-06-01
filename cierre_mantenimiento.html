@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cierre de Mantenimiento</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeede9;
+      --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+      --border: rgba(0,0,0,0.15); --border2: rgba(0,0,0,0.25);
+      --radius: 8px; --radius-lg: 12px;
+      --green-bg: #EAF3DE; --green-border: #3B6D11; --green-text: #27500A;
+      --amber-bg: #FAEEDA; --amber-border: #854F0B; --amber-text: #633806;
+      --red-bg: #FCEBEB; --red-border: #A32D2D; --red-text: #791F1F;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2b;
+        --text: #f0efe9; --text2: #b4b2a9; --text3: #888780;
+        --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+        --green-bg: #173404; --green-border: #639922; --green-text: #C0DD97;
+        --amber-bg: #412402; --amber-border: #EF9F27; --amber-text: #FAC775;
+        --red-bg: #501313; --red-border: #E24B4A; --red-text: #F7C1C1;
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg3); color: var(--text);
+      min-height: 100vh; padding: 1.5rem 1rem 3rem;
+    }
+    .card {
+      background: var(--bg); border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border);
+      max-width: 520px; margin: 0 auto;
+      padding: 1.5rem;
+    }
+    .header { margin-bottom: 1.25rem; }
+    .header h1 { font-size: 18px; font-weight: 500; color: var(--text); }
+    .header p  { font-size: 13px; color: var(--text2); margin-top: 3px; }
+    .field { margin-bottom: 14px; }
+    label {
+      display: block; font-size: 13px; font-weight: 500;
+      color: var(--text2); margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 100%; font-size: 15px; padding: 9px 11px;
+      background: var(--bg); color: var(--text);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius);
+      font-family: inherit; resize: vertical;
+      -webkit-appearance: none;
+    }
+    input:focus, textarea:focus {
+      outline: none; border-color: var(--text3);
+      box-shadow: 0 0 0 2px rgba(128,128,128,0.15);
+    }
+    .status-row { display: flex; gap: 8px; }
+    .status-btn {
+      flex: 1; padding: 9px 6px; font-size: 13px;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius);
+      background: var(--bg); color: var(--text2);
+      cursor: pointer; text-align: center;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .status-btn.sel-op { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); font-weight: 500; }
+    .status-btn.sel-pr { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); font-weight: 500; }
+    .status-btn.sel-pe { background: var(--red-bg);   border-color: var(--red-border);   color: var(--red-text);   font-weight: 500; }
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
+    .preview-label { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 8px; }
+    .preview {
+      background: var(--bg2); border: 0.5px solid var(--border);
+      border-radius: var(--radius); padding: .9rem 1rem;
+      font-size: 13px; line-height: 1.7; white-space: pre-wrap;
+      font-family: 'Courier New', monospace; color: var(--text);
+      min-height: 80px; word-break: break-word;
+    }
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+    .btn-wa {
+      flex: 2; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 16px; font-size: 15px; font-weight: 500;
+      background: #25D366; color: #fff;
+      border: none; border-radius: var(--radius);
+      cursor: pointer; font-family: inherit; transition: opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-wa:active { opacity: 0.8; }
+    .btn-copy {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 12px; font-size: 14px; font-weight: 500;
+      background: var(--bg); border: 0.5px solid var(--border2);
+      border-radius: var(--radius); color: var(--text);
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-copy:active { background: var(--bg2); }
+    .btn-limpiar {
+      font-size: 12px; color: var(--text3);
+      background: none; border: none; cursor: pointer;
+      padding: 0; text-decoration: underline; font-family: inherit;
+      margin-top: 8px; display: inline-block;
+    }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #2C2C2A; color: #fff; font-size: 13px;
+      padding: 9px 20px; border-radius: 20px;
+      opacity: 0; transition: opacity 0.2s; pointer-events: none;
+      white-space: nowrap; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+    .wa-icon { width: 20px; height: 20px; fill: white; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>Cierre de mantenimiento</h1>
+    <p>Completá y mandá directo por WhatsApp.</p>
+  </div>
+
+  <div class="field">
+    <label>Sector / equipo</label>
+    <input id="sector" type="text" placeholder="Ej: Compresor sala 3 / Bomba hidráulica N°2" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label>Falla reportada</label>
+    <textarea id="falla" rows="2" placeholder="Ej: No arrancaba, perdía presión..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Qué se hizo</label>
+    <textarea id="hizo" rows="3" placeholder="Ej: Se limpió filtro, se reemplazó correa..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Estado final</label>
+    <div class="status-row">
+      <button class="status-btn" id="btn-op" onclick="setStatus('Operativo')">✅ Operativo</button>
+      <button class="status-btn" id="btn-pr" onclick="setStatus('Provisorio')">⚠️ Provisorio</button>
+      <button class="status-btn" id="btn-pe" onclick="setStatus('Pendiente')">🔴 Pendiente</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Falta hacer / repuesto <span style="font-weight:400;color:var(--text3)">(opcional)</span></label>
+    <textarea id="falta" rows="2" placeholder="Ej: Pedir rodamiento 6205, revisar cableado..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Responsable</label>
+    <input id="resp" type="text" placeholder="Nombre del técnico" autocomplete="off">
+  </div>
+
+  <hr class="divider">
+
+  <div class="preview-label">Vista previa</div>
+  <div class="preview" id="preview">—</div>
+
+  <div class="btn-row">
+    <button class="btn-wa" onclick="abrirWhatsApp()">
+      <svg class="wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.112 1.524 5.84L.057 23.6a.5.5 0 0 0 .613.612l5.799-1.458A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.886 9.886 0 0 1-5.031-1.371l-.36-.214-3.738.979.996-3.648-.235-.374A9.862 9.862 0 0 1 2.1 12C2.1 6.534 6.534 2.1 12 2.1c5.465 0 9.9 4.434 9.9 9.9 0 5.465-4.435 9.9-9.9 9.9z"/>
+      </svg>
+      Abrir en WhatsApp
+    </button>
+    <button class="btn-copy" onclick="copiarTexto()">
+      <i class="ti ti-copy" style="font-size:18px"></i>
+      Copiar
+    </button>
+  </div>
+  <button class="btn-limpiar" onclick="limpiar()">Limpiar formulario</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let estadoSel = '';
+
+  function setStatus(val) {
+    estadoSel = val;
+    document.getElementById('btn-op').className = 'status-btn' + (val==='Operativo'  ? ' sel-op' : '');
+    document.getElementById('btn-pr').className = 'status-btn' + (val==='Provisorio' ? ' sel-pr' : '');
+    document.getElementById('btn-pe').className = 'status-btn' + (val==='Pendiente'  ? ' sel-pe' : '');
+    actualizar();
+  }
+
+  function v(id) { return document.getElementById(id).value.trim(); }
+
+  function generarMensaje() {
+    const sector = v('sector'), falla = v('falla'), hizo = v('hizo'),
+          falta  = v('falta'),  resp  = v('resp');
+    if (!sector && !falla && !hizo && !estadoSel && !resp) return null;
+    const emoji = { Operativo: '✅', Provisorio: '⚠️', Pendiente: '🔴' };
+    const now   = new Date();
+    const fecha = now.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
+    const hora  = now.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+    let m = `✅ *CIERRE DE MANTENIMIENTO*\n`;
+    m += `📅 ${fecha} ${hora}\n`;
+    m += `━━━━━━━━━━━━━━━━━━\n`;
+    m += `*Sector / equipo:* ${sector || '—'}\n`;
+    m += `*Falla reportada:* ${falla  || '—'}\n`;
+    m += `*Qué se hizo:* ${hizo    || '—'}\n`;
+    m += `*Estado final:* ${estadoSel ? (emoji[estadoSel] + ' ' + estadoSel) : '—'}\n`;
+    if (falta) m += `*Falta hacer:* ${falta}\n`;
+    m += `*Responsable:* ${resp || '—'}\n`;
+    m += `━━━━━━━━━━━━━━━━━━`;
+    return m;
+  }
+
+  function actualizar() {
+    document.getElementById('preview').textContent = generarMensaje() || '—';
+  }
+
+  ['sector','falla','hizo','falta','resp'].forEach(id =>
+    document.getElementById(id).addEventListener('input', actualizar)
+  );
+
+  function abrirWhatsApp() {
+    const msg = generarMensaje();
+    if (!msg) { toast('Completá al menos un campo'); return; }
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  }
+
+  function copiarTexto() {
+    const msg = generarMensaje();
+    if (!msg) { toast('Completá al menos un campo'); return; }
+    navigator.clipboard.writeText(msg)
+      .then(() => toast('¡Copiado!'))
+      .catch(() => toast('Copiá desde la vista previa'));
+  }
+
+  function limpiar() {
+    ['sector','falla','hizo','falta','resp'].forEach(id => document.getElementById(id).value = '');
+    estadoSel = '';
+    ['btn-op','btn-pr','btn-pe'].forEach(id => document.getElementById(id).className = 'status-btn');
+    actualizar();
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>
